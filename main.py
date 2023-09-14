@@ -1,30 +1,27 @@
-#test
 
 import tkinter as tk
 from tkinter import ttk
 import Flowsheet as fl
+import pickle
+
 
 # from Flowsheet.Fowsheet import Course
 
 # from tkinter import *
 #Maybe make courseList like a lookup dictionary, so you can look up the name of the Course and it returns the obj course
-CourseList = []
 # Cells = []
 root = tk.Tk()
 
-root.geometry("1000x600")
-root.title('Main bit')
-# root.configure")
+root.geometry("600x400")
+root.title('Menu')
+# root.configure"
+
+
+
 
 
 
 #I think that we should begin with an intro screen, where you can select to make a 'new Project' etc 
-
-
-
-
-
-
 
 
 
@@ -77,14 +74,23 @@ class cell:
         dropdown3 = tk.OptionMenu(wind, clecs, *lec_options)
         dropdown3.pack()
         
-        # prereqs = []
-        # label5 = tk.Label(wind, text = 'Prerequisites' )
-        # label5.pack()
-        # prereq_options = CourseList
-        # tk.Listbox(wind)
+        label5 = tk.Label(wind, text = 'Prerequisites' )
+        label5.pack()
+
+
+        # #Could make it so can only choose prereqs from previous years.
+        # prereq_options = 
+        listbox = tk.Listbox(wind, selectmode='multiple')
+        listbox.insert(1, *CourseList)       
+        listbox.pack()
+
         
         def saveandclose():
             #Saving stuff
+            # prereqs_index = listbox.curselection()
+            # for k in pre
+
+
             self.updatecourse(cname.get(), cpart.get(), cterm.get(), int(clecs.get()))
             self.updatecell()
             wind.destroy()
@@ -99,8 +105,8 @@ class cell:
 
         
     
-    def createFrame(self):
-        self.frame = tk.Frame(root,
+    def createFrame(self,window):
+        self.frame = tk.Frame(window,
                               background="red",
                               height = 10,
                               width = 10
@@ -130,6 +136,7 @@ class cell:
         self.course.updatepart(newpart)
         self.course.updateterm(newterm)
         self.course.updatelecs(newlecs)
+
        
     def updatecell(self):
         self.Label.configure(text = self.course.CourseName)
@@ -140,8 +147,63 @@ class cell:
         self.frame.destroy()
 
 
+class editline:
+    def __init__(self,course = None ,selected = False) -> None:
+        self.course = course
+    
+    def createline(self):
+
+        line = tk.Label(editroot, text = self.course.CourseName)
+        line.pack()
+
+
+
+def save_and_exit():
+    # if cellroot_displayed:
+    #     cellroot.destroy()
+    # elif editroot_displayed:
+    #     editroot.destroy()
+    
+    savescreen = tk.Tk()
+    savescreen.geometry('600x400')
+    savescreen.title('Save flowsheet')
+
+
+    label = tk.Label(savescreen, text = "Filename:" )
+    label.pack()
+
+    filenamevar = tk.StringVar(savescreen)
+    save_entry = tk.Entry(savescreen, textvariable=filenamevar)
+
+    save_entry.pack()
+
+    
+    def exitcommand():
+        filename = filenamevar.get()
+        print(filename)
+        with open(filename + '.pickle', 'wb') as handle:
+            pickle.dump(CourseList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        savescreen.destroy()
+        exit()
+
+    def discard():
+        exit()
+
+
+    savebutton = tk.Button(savescreen,text = 'Save', command = exitcommand)
+    savebutton.pack()
+
+    discardbutton = tk.Button(savescreen, text = 'Discard', command = discard)
+    discardbutton.pack()
+
+    savescreen.mainloop()
+
+
+
 
 def createCourse():
+    #viewtype is either 'cell' or 'edit'
+
     popup = tk.Tk()
     popup.title('Popup Thing')
     popup.geometry('500x500')
@@ -177,12 +239,18 @@ def createCourse():
     clecs.set(16)
     dropdown3 = tk.OptionMenu(popup, clecs, *lec_options)
     dropdown3.pack()
-    
-    prereqs = []
+
+
+
     label5 = tk.Label(popup, text = 'Prerequisites' )
     label5.pack()
-    prereq_options = CourseList
-    tk.Listbox(popup)
+
+
+    # #Could make it so can only choose prereqs from previous years.
+    # prereq_options = 
+    listbox = tk.Listbox(popup, selectmode='multiple')
+    listbox.insert(1, *CourseList)       
+    listbox.pack()
 
 
 
@@ -193,9 +261,21 @@ def createCourse():
 
     def saveandclose():
         #Saving stuff
+        
         newcourse = fl.Course(cname.get(),cpart.get(),cterm.get(),int(clecs.get()))
-        newcell = cell(newcourse)
-        newcell.createFrame()
+        prereqs_indices = listbox.curselection()
+        for k in prereqs_indices:
+            newcourse.prereqs.append(CourseList[k])
+
+
+        if cellroot_displayed:
+            newcell = cell(newcourse)
+            newcell.createFrame(cellroot)
+        elif editroot_displayed:
+            new_edit_line = editline(newcourse)
+            new_edit_line.createLine(editroot)
+        
+
         # Cells.append(newcell)
         CourseList.append(newcourse)
         popup.destroy()
@@ -204,60 +284,61 @@ def createCourse():
     savebutton = tk.Button(popup, text= 'Save',command=saveandclose)
     savebutton.pack()
 
-
-    #Now, when we make a new course, we want a corresponding cell in the flowchart
-    newframe = tk.Frame(root, )
-    
     popup.mainloop()
 
     
 
+def load_cell_view():
 
-
-
-
-
-
-    
-
-
-add_course_button = tk.Button(root, text= 'Add Course', command= createCourse)
-add_course_button.pack()
-
-
-
-class editline():
-    def __init__(self,course,selected) -> None:
-        self.course = course
-    
-    def createline(self):
-        pass
-
-
-def cellview():
-    mainroot = tk.Tk()
-    mainroot.geometry("1000x600")
-    mainroot.title('Main bit')
-
-    for course in CourseList:
-        pass
-
-
-    mainroot.mainloop()
-
-
-    pass
-
-
-
-
-
-def editview():
-    # root.quit()
     root.destroy()
-    editview = tk.Tk()
-    editview.geometry('1000x600')
-    editview.title('Edit View')
+    
+
+    global cellroot 
+    global cellroot_displayed 
+    cellroot_displayed = True
+    editroot_displayed = False
+    cellroot = tk.Tk()
+    cellroot.geometry("1000x600")
+    cellroot.title('Main bit')
+    for course in CourseList:
+        newcell = cell(course)
+        newcell.createFrame(cellroot)
+            
+
+    edit_view_button = tk.Button(cellroot, text='Enter Edit View', command = load_edit_view)
+    edit_view_button.pack()
+      
+    add_course_button = tk.Button(cellroot, text= 'Add Course', command= createCourse)
+    add_course_button.pack()
+
+
+    # course_chekcer  = tk.Button(cellroot, text = 'Check courses', command= printcourses)
+    # course_chekcer.pack(side='bottom')
+
+
+    save_and_quit = tk.Button(cellroot, text = 'Save and Exit' , command = save_and_exit)
+    save_and_quit.pack()
+
+    cellroot.mainloop()
+
+
+
+
+def load_edit_view():
+    # root.quit()
+    cellroot.destroy()
+
+    global editroot 
+    global editroot_displayed
+    editroot_displayed = True
+    cellroot_displayed = False
+    editroot = tk.Tk()
+    editroot.geometry('1000x600')
+    editroot.title('Edit View')
+    
+    for course in CourseList:
+        neweditline = editline(course)
+        neweditline.createline()
     
     #then here put all the things on the editscreen
     # for course in CourseList:
@@ -266,44 +347,44 @@ def editview():
     #     coursecell.createFrame()
 
 
-    def saveandclose():
-        editview.destroy()
-        root.mainloop()
 
-       
-
-    returnbutton = tk.Button(editview, text = 'save', command = saveandclose)
+    returnbutton = tk.Button(editroot, text = 'Cell View', command = load_cell_view)
     returnbutton.pack()
 
+    save_and_quit = tk.Button(editroot,text = 'Save and Exit', command= save_and_exit)
+    save_and_quit.pack()
    
 
-    editview.mainloop()
-
-    
+    editroot.mainloop()
 
 
-edit_view_button = tk.Button(root, text='Enter Edit View', command = editview)
-edit_view_button.pack()
+
+# def printcourses():
+#     if len(CourseList)==0:
+#         print('no courses')
+#     else:
+#         for course in CourseList:
+#             print(course)
 
 
-# c1 = fl.Course("Algebraic Topology", 'Part II',  'Michaelmas' , 24)
 
-# cell1 = cell( c1)
-
-# edit1 = tk.Button(root, text = 'Edit', command = cell1.editframe)
-
-# edit1.pack()
+CourseList=[]
 
 
-def printcourses():
-    if len(CourseList)==0:
-        print('no courses')
-    else:
-        for course in CourseList:
-            print(course)
+def loadcourses():
+    pass
 
-course_chekcer  = tk.Button(root, text = 'Check courses', command= printcourses)
-course_chekcer.pack(side='bottom')
+
+new_project_button = tk.Button(root, text = 'New Project', command=load_cell_view)
+#Work out how to save and load course information!
+load_project_button = tk.Button(root, text  = 'Load Project', command=loadcourses)
+
+
+
+new_project_button.pack()
+load_project_button.pack()
+
+
 
 
 

@@ -5,7 +5,7 @@ from tkinter import ttk
 #Is there a better way to store all of these properties of the class??
 
 class Course:
-    def __init__(self, courseName: str, part:str   ,term: str, Numlecs: int, areas=[], prereqs=[], postreqs=[], selected = False):
+    def __init__(self, courseName: str, part:str   ,term: str, Numlecs: int, areas=[], prereqs=[], selected = False):
         #The prereqs and post reqs will be an array containing other courses, the general is for general info
         #  such as which term, how many courses, the lecturer. References could contain like books and lecture notes and stuff
         self.CourseName = courseName
@@ -13,7 +13,6 @@ class Course:
         #We may want to differentiate between 'essential', 'useful' and so on.
         #Also, we could add a list of 'good to be accompanied by' 
         self.prereqs = prereqs
-        self.postreqs = postreqs
         # self.general = general
         # self.references = references
         self.term = term
@@ -28,6 +27,9 @@ class Course:
     def addpostreq(self, newpr):
         self.postreqs.append(newpr)
 
+    def courseandpart(self):
+        return self.part + ' : ' + self.CourseName
+
 
     def __str__(self) -> str:
         return self.part + " : " + self.CourseName + ', ' + str(self.Numlecs) + " lectures in "  + self.term 
@@ -35,6 +37,21 @@ class Course:
     def getfamilty(self):
         #This is going to get all of the courses that the current course is connected to, eg its anscestors and descendants, (see that the structure here is essentialy a tree)
         pass
+
+    def updatename(self, newname):
+        self.CourseName = newname
+    
+    def updateterm(self, newterm):
+        self.term = newterm
+
+    def updatepart(self, newpart):
+        self.part = newpart
+  
+    def updatelecs(self, newlecs):
+        self.Numlecs = newlecs
+
+
+
 
     
 
