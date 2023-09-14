@@ -4,6 +4,14 @@ import tkinter as tk
 from tkinter import ttk
 #Is there a better way to store all of these properties of the class??
 
+part_to_int = {
+    "Part IA" : 0,
+    "Part IB" : 1,
+    "Part II" : 2,
+    "Part III" : 3
+}
+
+
 class Course:
     def __init__(self, courseName: str, part:str   ,term: str, Numlecs: int, areas=[], prereqs=[], selected = False):
         #The prereqs and post reqs will be an array containing other courses, the general is for general info
@@ -50,6 +58,8 @@ class Course:
     def updatelecs(self, newlecs):
         self.Numlecs = newlecs
 
+    def part_to_int(self):
+        return part_to_int[self.part]
 
 
 

@@ -4,48 +4,27 @@ import os
 import platform
 
 import pickle
+from tkinter import filedialog
 
 
 root = tk.Tk()
-root.geometry('800x800+1000+30')
+
+
+def openf():
+    filepath = filedialog.askopenfilename()
+    print(filepath)
+    
+    with open(filepath, 'rb') as handle:
+        CourseList = pickle.load(handle)
+
+    print(CourseList)
 
 
 
-label1 = tk.Label(root, padx=200,pady=200,border= 1 , borderwidth=10,  bg='blue',text = 'test')
-label1.pack()
+button = tk.Button(root, text = 'get file', command = openf)
+button.pack()
 
-
-c1 = fl.Course("Algebraic Topology", 'Part II',  'Michaelmas' , 24)
-c2 = fl.Course("Algebraic Geometry",  'Part II','Lent', 24)
-c3 = fl.Course("Algebraic Number Theory",  'Part III','Lent', 24)
-
-
-CourseList = [c1,c2,c3]
-
-prereqs = []
-label5 = tk.Label(root, text = 'Prerequisites' )
-label5.pack()
-prereq_options = CourseList
-
-
-listbox = tk.Listbox(root, width=50, selectmode='multiple')
-listbox.pack()
-
-listbox.insert(1,*CourseList)
-# listbox.yview()
-
-
-
-def listselected():
-    coursesindex = listbox.curselection()
-
-    print(coursesindex)
-    for k in coursesindex:
-        print(CourseList[k])
-
-
-
-lisc = tk.Button(root, text = ' press', command = listselected)
-lisc.pack()
 
 root.mainloop()
+
+

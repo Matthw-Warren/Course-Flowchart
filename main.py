@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 import Flowsheet as fl
 import pickle
-
+from tkinter import filedialog
 
 # from Flowsheet.Fowsheet import Course
 
@@ -16,6 +16,18 @@ root.geometry("600x400")
 root.title('Menu')
 # root.configure"
 
+
+global CourseList
+global IAcourses
+global IBcourses
+global IIcourses
+global IIIcourses
+
+CourseList=[]
+IAcourses = []
+IBcourses = []
+IIcourses = []
+IIIcourses = []
 
 
 
@@ -38,9 +50,11 @@ class cell:
         self.selected = selected
     
     def editframe(self):
+        global wind
         wind = tk.Tk()
         wind.title('Edit ' + self.course.CourseName)
         wind.geometry('500x500')
+
 
         label1 = tk.Label(wind, text = "Course Name: " )
         label1.pack()
@@ -60,7 +74,7 @@ class cell:
         
         label3 = tk.Label(wind, text = "Term: " )
         label3.pack()
-        Term_options = ['Mihcaelmas', 'Lent', 'Easter']
+        Term_options = ['Michaelmas', 'Lent', 'Easter']
         cterm = tk.StringVar(wind)
         cterm.set(self.course.term)
         dropdown2 = tk.OptionMenu(wind, cterm, *Term_options)
@@ -107,16 +121,31 @@ class cell:
     
     def createFrame(self,window):
         self.frame = tk.Frame(window,
-                              background="red",
-                              height = 10,
-                              width = 10
+                              height = 10
                                 )
         # self.frame.configure(border = '')
-        self.frame.pack()
+        rownumb =0
+        if self.course.part =='Part IA':
+            rownumb = IAcourses.index(self.course)
+        elif self.course.part =='Part IB':
+            rownumb = IBcourses.index(self.course)
+        elif self.course.part =='Part II':
+            rownumb = IIcourses.index(self.course)
+        elif self.course.part =='Part III':
+            rownumb = IIIcourses.index(self.course)
+
+
+        def selectcourse():
+            self.selected = True
+            self.frame.configure(background='blue')
+
+
+
+        self.frame.grid(column=self.course.part_to_int(), sticky = 'ew', row = rownumb+2, padx=5 ,pady =5)
         # self.frame.bind("B1")
 
-        self.Label = tk.Label(master = self.frame, text = self.course.CourseName, height = 5, font = 'Arial 36 bold', background='blue')
-        self.Label.pack( side = 'left')
+        self.Namebuton = tk.Button(master = self.frame, text = self.course.CourseName  , command=selectcourse)
+        self.Namebuton.pack( )
 
         self.label2 = tk.Label(self.frame,text = self.course.term + ', ' + self.course.part + ', ' + str(self.course.Numlecs))
         self.label2.pack()
@@ -139,7 +168,14 @@ class cell:
 
        
     def updatecell(self):
-        self.Label.configure(text = self.course.CourseName)
+        self.frame.destroy()
+        if cellroot_displayed:
+            self.createFrame(cellroot)
+        elif editroot_displayed:
+            self.createFrame(editroot)
+
+
+        self.Namebuton.configure(text = self.course.CourseName)
         self.label2.configure(   text = self.course.term + ', ' + self.course.part + ', ' + str(self.course.Numlecs)) 
 
     def deletecell(self):
@@ -203,7 +239,7 @@ def save_and_exit():
 
 def createCourse():
     #viewtype is either 'cell' or 'edit'
-
+    global popup
     popup = tk.Tk()
     popup.title('Popup Thing')
     popup.geometry('500x500')
@@ -211,6 +247,7 @@ def createCourse():
 
     label1 = tk.Label(popup, text = "Course Name: " )
     label1.pack()
+
     cname = tk.StringVar(popup)
     courseEnter1 = tk.Entry(popup, textvariable=cname)
     courseEnter1.pack()
@@ -219,14 +256,16 @@ def createCourse():
     label2 = tk.Label(popup, text = "Part: " )
     label2.pack()
     Part_options = [ 'Part IA', 'Part IB', 'Part II', 'Part III']
+
     cpart = tk.StringVar(popup)
     cpart.set('Part IA')
+
     dropdown = tk.OptionMenu(popup, cpart, *Part_options)
     dropdown.pack()
     
     label3 = tk.Label(popup, text = "Term: " )
     label3.pack()
-    Term_options = ['Mihcaelmas', 'Lent', 'Easter']
+    Term_options = ['Michaelmas', 'Lent', 'Easter']
     cterm = tk.StringVar(popup)
     cterm.set('Michaelmas')
     dropdown2 = tk.OptionMenu(popup, cterm, *Term_options)
@@ -268,6 +307,10 @@ def createCourse():
             newcourse.prereqs.append(CourseList[k])
 
 
+        CourseList.append(newcourse)
+        partcourses(newcourse)
+
+
         if cellroot_displayed:
             newcell = cell(newcourse)
             newcell.createFrame(cellroot)
@@ -276,8 +319,7 @@ def createCourse():
             new_edit_line.createLine(editroot)
         
 
-        # Cells.append(newcell)
-        CourseList.append(newcourse)
+
         popup.destroy()
         
 
@@ -300,25 +342,52 @@ def load_cell_view():
     cellroot = tk.Tk()
     cellroot.geometry("1000x600")
     cellroot.title('Main bit')
+
+    # mainframe = tk.Frame(cellroot)
+    # mainframe.pack(fill='both', expand=1)
+
+
+    TopFrame = tk.Frame(cellroot)
+    TopFrame.grid(columnspan=  4, row = 0 , column =0 , sticky='nw')
+
+
+
+    edit_view_button = tk.Button(TopFrame, text='Enter Edit View', command = load_edit_view)
+    edit_view_button.grid(column=0, row=0)
+
+      
+    add_course_button = tk.Button(TopFrame, text= 'Add Course', command= createCourse)
+    add_course_button.grid(column=1, row=0)
+
+    save_and_quit = tk.Button(TopFrame, text = 'Save and Exit' , command = save_and_exit)
+    save_and_quit.grid(column=2, row=0)
+
+
+    for k in range(4):
+       cellroot.grid_columnconfigure(k,weight=1, minsize=80)
+
+
+    part1a_label = tk.Label(cellroot, text = 'Part IA')
+    part1a_label.grid(sticky = 'ew', column=0, row  =1)
+
+    part1b_label = tk.Label(cellroot, text = 'Part IB')
+    part1b_label.grid(sticky = 'ew', column=1, row  =1)
+
+    partii_label = tk.Label(cellroot, text = 'Part II')
+    partii_label.grid(sticky = 'ew', column=2, row  =1)
+
+    partiii_label = tk.Label(cellroot, text = 'Part III')
+    partiii_label.grid(sticky = 'ew', column=3, row  =1)
+
+
+
     for course in CourseList:
         newcell = cell(course)
         newcell.createFrame(cellroot)
             
 
-    edit_view_button = tk.Button(cellroot, text='Enter Edit View', command = load_edit_view)
-    edit_view_button.pack()
-      
-    add_course_button = tk.Button(cellroot, text= 'Add Course', command= createCourse)
-    add_course_button.pack()
 
-
-    # course_chekcer  = tk.Button(cellroot, text = 'Check courses', command= printcourses)
-    # course_chekcer.pack(side='bottom')
-
-
-    save_and_quit = tk.Button(cellroot, text = 'Save and Exit' , command = save_and_exit)
-    save_and_quit.pack()
-
+    
     cellroot.mainloop()
 
 
@@ -368,16 +437,47 @@ def load_edit_view():
 
 
 
-CourseList=[]
-
 
 def loadcourses():
-    pass
+    filepath = filedialog.askopenfilename()
+
+    with open(filepath, 'rb') as handle:
+        newcourses = pickle.load(handle)
+    for j in newcourses:
+        CourseList.append(j)
+
+    for k in CourseList:
+        if k.part == 'Part IA':
+            IAcourses.append(k)
+        elif k.part == 'Part IB':
+            IBcourses.append(k)
+        elif k.part == 'Part II':
+            IIcourses.append(k)
+        elif k.part == 'Part III':
+            IIIcourses.append(k)
+
+    load_cell_view()
 
 
-new_project_button = tk.Button(root, text = 'New Project', command=load_cell_view)
+
+
+def partcourses(course):
+
+    if course.part == 'Part IA':
+        IAcourses.append(course)
+    elif course.part == 'Part IB':
+        IBcourses.append(course)
+    elif course.part == 'Part II':
+        IIcourses.append(course)
+    elif course.part == 'Part III':
+        IIIcourses.append(course)
+
+new_project_button = tk.Button(root, text = 'New Project', command= lambda : load_cell_view())
 #Work out how to save and load course information!
 load_project_button = tk.Button(root, text  = 'Load Project', command=loadcourses)
+
+
+
 
 
 
