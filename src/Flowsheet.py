@@ -1,92 +1,108 @@
+import networkx as nx
 
-
-import tkinter as tk
-from tkinter import ttk
-#Is there a better way to store all of these properties of the class??
 
 part_to_int = {
-    "Part IA" : 0,
-    "Part IB" : 1,
-    "Part II" : 2,
-    "Part III" : 3
+    "Part IA" : 1,
+    "Part IB" : 2,
+    "Part II" : 3,
+    "Part III" : 4
 }
 
 
+
+class Graph(dict):
+    def __init__(self, name):
+        self.name = name
+
+    def add_course(self,course):
+        pass
+
+
+
+
 class Course:
-    def __init__(self, courseName: str, part:str   ,term: str, Numlecs: int, areas=[], prereqs=[], selected = False):
+    def __init__(self, id, course_name: str, year ,term: str , number_lecs: int, prereqs:set, postreqs:set, coreqs:set, selected = False):
         #The prereqs and post reqs will be an array containing other courses, the general is for general info
         #  such as which term, how many courses, the lecturer. References could contain like books and lecture notes and stuff
-        self.CourseName = courseName
-        self.areas = areas
-        #We may want to differentiate between 'essential', 'useful' and so on.
-        #Also, we could add a list of 'good to be accompanied by' 
+
+        #Note to self, This is a graph - so the prereqs are going to be only the immediate ones - we dont need to go crazy and add all of the prereqs in
+        self.id = id
+        self.course_name = course_name
         self.prereqs = prereqs
-        # self.general = general
-        # self.references = references
+        self.posreqs = postreqs
+        self.coreqs = coreqs 
         self.term = term
-        self.Numlecs = Numlecs
+        self.number_lecs
         self.selected = selected
-        self.part = part
-
-
-
-    def addprereq(self, newprereq):
-        self.prereqs.append(newprereq)
-    def addpostreq(self, newpr):
-        self.postreqs.append(newpr)
-
-    def courseandpart(self):
-        return self.part + ' : ' + self.CourseName
+        self.year = year
+        self.direct_connections  = self.prereqs+ self.postreqs + self.coreqs
 
 
     def __str__(self) -> str:
-        return self.part + " : " + self.CourseName + ', ' + str(self.Numlecs) + " lectures in "  + self.term 
+        return 'Year {} {}, Term: {}, Number of lectures: {}'.format(self.year, self.course_name, self.term, self.number_lecs)
 
-    def getfamilty(self):
-        #This is going to get all of the courses that the current course is connected to, eg its anscestors and descendants, (see that the structure here is essentialy a tree)
-        pass
+
+    def addprereq(self, newprereq):
+        self.prereq.append(newprereq)
+        self.connections  = self.prereqs+ self.postreqs + self.coreqs
+
+    def addpostreq(self, newpostreq):
+        self.postreqs.append(newpostreq)
+        self.connections  = self.prereqs+ self.postreqs + self.coreqs
+
+    def addcoreq(self,newcoreq):
+        self.coreq.append(newcoreq)
+        self.connections  = self.prereqs+ self.postreqs + self.coreqs
+
+    def remove_prereq(self, id):
+        self.prereqs.remove(id)
+        
+    def remove_postreq(self, id):
+        self.postreqs.remove(id)
+
+    def remove_coreq(self, id):
+        self.coreqs.remove(id)
+
+
+    def get_deep_prereqs(self, Graph):
+        #Graph will be a dict from id to the node
+        output = self.prereqs
+        digging = True
+        while digging:
+            size = len(output)
+            for k in output:
+                output = output.union(Graph[k.id].prereqs)
+            if len(output) == size:
+                digging = False
+        return output     
+
+    def get_deep_postreqs(self, Graph):
+        #Graph will be a dict from id to the node
+        output = self.postreqs
+        digging = True
+        while digging:
+            size = len(output)
+            for k in output:
+                output = output.union(Graph[k.id].postreqs)
+            if len(output) == size:
+                digging = False
+        return output     
+        
+    def get_all_connections(self,Graph):
+        return self.get_deep_postreqs.union(self.get_deep_prereqs)
+
 
     def updatename(self, newname):
-        self.CourseName = newname
+        self.course_name = newname
     
     def updateterm(self, newterm):
         self.term = newterm
 
-    def updatepart(self, newpart):
-        self.part = newpart
+    def updateyear(self, year):
+        self.year = year
   
     def updatelecs(self, newlecs):
-        self.Numlecs = newlecs
-
-    def part_to_int(self):
-        return part_to_int[self.part]
-
-
-
-    
-
-    
-class Area:
-    def __init__(self,name,tagcolour=None):
-        self.name = name
-        self.colour = tagcolour
-
-
-c1 = Course("Algebraic Topology", 'Part II',  'Michaelmas' , 24)
-c2 = Course("Algebraic Geometry",  'Part II','Lent', 24)
-
-
-
-# def CreateCourse():
-#     print('Course Name : ')
-#     cname = input()
-#     print('Enter course year (Part 1A, Part 1B, Part II, Part III) : ')
-#     cpart = input()
-#     print('Enter term : ')
-#     cterm = input()
-#     print('Number of lectures : ') 
-#     clecs = input()
-#     return Course(cname,cpart,cterm, clecs)
+        self.number_lecs = newlecs
 
 
 

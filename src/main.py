@@ -11,6 +11,8 @@ from tkinter import filedialog
 # from tkinter import *
 #Maybe make courseList like a lookup dictionary, so you can look up the name of the Course and it returns the obj course
 # Cells = []
+
+
 root = tk.Tk()
 
 root.geometry("600x400")
@@ -32,18 +34,7 @@ IIIcourses = []
 
 
 
-
-
 #I think that we should begin with an intro screen, where you can select to make a 'new Project' etc 
-
-
-
-
-
-
-
-
-
 
 class cell:
     def __init__(self, course= None, selected = False):
@@ -200,10 +191,6 @@ class editline:
 
 
 def save_and_exit():
-    # if cellroot_displayed:
-    #     cellroot.destroy()
-    # elif editroot_displayed:
-    #     editroot.destroy()
     
     savescreen = tk.Tk()
     savescreen.geometry('600x400')
