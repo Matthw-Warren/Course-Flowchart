@@ -5,12 +5,7 @@ import pickle
 from tkinter import filedialog
 
 
-
-# from Flowsheet.Fowsheet import Course
-
-# from tkinter import *
-#Maybe make courseList like a lookup dictionary, so you can look up the name of the Course and it returns the obj course
-# Cells = []
+#Let's just do a streamlit app - tkinter annoys me.
 
 
 root = tk.Tk()
