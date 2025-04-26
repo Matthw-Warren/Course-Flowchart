@@ -16,8 +16,8 @@ part_to_int = {
 
 
 class Graph(dict):
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
+        pass
 
     def add_course(self,course):
         if course.id in self.keys():
@@ -140,12 +140,12 @@ class Course:
         self.number_lecs = newlecs
 
 
-def df_to_graph(df,graph_name):
+def df_to_graph(df):
     cols_check = ['id', 'Name', 'Year', 'Term', 'Num lecs', 'Time', 'Prereqs', 'Postreqs', 'Coreqs' ]
     if list(df.columns) != cols_check:
         print('Improper columns') 
         return
-    graph = Graph(graph_name)
+    graph = Graph()
     graph_keys = df['id']
     graph_vals = df[cols_check[1:]]
     for k in range(len(df)):
