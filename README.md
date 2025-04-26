@@ -1,7 +1,4 @@
-# Course Flowchart
-
-
-
+# CourseStructure
 Project from some years back to make a flowchart app for university courses.
 
 May have another go at this at some point because realistically this can be implemented with a graph structrue, and seems to be a decently nice problem!

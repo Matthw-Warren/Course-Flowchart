@@ -5,31 +5,15 @@ import pickle
 from tkinter import filedialog
 
 
-#Let's just do a streamlit app - tkinter annoys me.
+#Let's just do a streamlit app - tkinter (if I recall correctly) annoyed me
+
+import streamlit as st
 
 
-root = tk.Tk()
-
-root.geometry("600x400")
-root.title('Menu')
-# root.configure"
-
-
-global CourseList
-global IAcourses
-global IBcourses
-global IIcourses
-global IIIcourses
-
-CourseList=[]
-IAcourses = []
-IBcourses = []
-IIcourses = []
-IIIcourses = []
+#So we want to create a graph of courses essentially - then have some nice ways of viewing this.
 
 
 
-#I think that we should begin with an intro screen, where you can select to make a 'new Project' etc 
 
 class cell:
     def __init__(self, course= None, selected = False):

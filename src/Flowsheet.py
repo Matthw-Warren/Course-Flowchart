@@ -1,6 +1,5 @@
 import networkx as nx
 
-
 part_to_int = {
     "Part IA" : 1,
     "Part IB" : 2,
@@ -9,19 +8,29 @@ part_to_int = {
 }
 
 
-
 class Graph(dict):
     def __init__(self, name):
         self.name = name
 
     def add_course(self,course):
+        if course.id in self.keys():
+            return 'Id already taken'
+        self[course.id] = course
+        
+        pass
+
+    def get_hours_per_week(self):
+        return sum([x.number_lecs for x in self.values()])
+    
+
+    def get_course_names(self):
         pass
 
 
 
 
 class Course:
-    def __init__(self, id, course_name: str, year ,term: str , number_lecs: int, prereqs:set, postreqs:set, coreqs:set, selected = False):
+    def __init__(self, id, course_name: str, year ,term: str , number_lecs: int, prereqs:set, postreqs:set, coreqs:set, selected = False, time= None):
         #The prereqs and post reqs will be an array containing other courses, the general is for general info
         #  such as which term, how many courses, the lecturer. References could contain like books and lecture notes and stuff
 
@@ -106,3 +115,4 @@ class Course:
 
 
 
+    
