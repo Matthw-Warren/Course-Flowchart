@@ -1,10 +1,6 @@
 
-import tkinter as tk
+import networkx as nx
 import Flowsheet as fl
-import pickle
-from tkinter import filedialog
-
-
 #Let's just do a streamlit app - tkinter (if I recall correctly) annoyed me
 
 import streamlit as st

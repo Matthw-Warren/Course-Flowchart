@@ -1,4 +1,6 @@
 import networkx as nx
+import pandas as pd
+
 
 part_to_int = {
     "Part IA" : 1,
@@ -6,6 +8,11 @@ part_to_int = {
     "Part II" : 3,
     "Part III" : 4
 }
+
+
+
+
+
 
 
 class Graph(dict):
@@ -17,20 +24,34 @@ class Graph(dict):
             return 'Id already taken'
         self[course.id] = course
         
-        pass
+
+    def remove_course(self, course_id):
+        self.pop(course_id)
 
     def get_hours_per_week(self):
         return sum([x.number_lecs for x in self.values()])
     
 
     def get_course_names(self):
-        pass
+        return [x.course_name for x in self.values()]
 
 
+
+    def graph_to_df(self):
+        cols = ['id', 'Name', 'Year', 'Term', 'Num lecs', 'Time', 'Prereqs', 'Postreqs', 'Coreqs' ]
+        df = pd.DataFrame(columns=cols)
+        for i, course in enumerate(self.values()):
+            df.loc[i] = course.course_to_list()
+        return df
+    
+
+    def graph_to_csv(self,name):
+        df= self.graph_to_df()
+        df.to_csv('src/saves'+name +'.csv')
 
 
 class Course:
-    def __init__(self, id, course_name: str, year ,term: str , number_lecs: int, prereqs:set, postreqs:set, coreqs:set, selected = False, time= None):
+    def __init__(self, id, course_name: str, year ,term: str , number_lecs: int, timeandday ,  prereqs:set = set(), postreqs:set = set(), coreqs:set=set(), selected = False):
         #The prereqs and post reqs will be an array containing other courses, the general is for general info
         #  such as which term, how many courses, the lecturer. References could contain like books and lecture notes and stuff
 
@@ -38,30 +59,35 @@ class Course:
         self.id = id
         self.course_name = course_name
         self.prereqs = prereqs
-        self.posreqs = postreqs
+        self.postreqs = postreqs
         self.coreqs = coreqs 
         self.term = term
-        self.number_lecs
+        self.number_lecs = number_lecs
         self.selected = selected
         self.year = year
-        self.direct_connections  = self.prereqs+ self.postreqs + self.coreqs
+        self.timeandday = timeandday
+        self.direct_connections  = self.prereqs.union(self.postreqs .union(self.coreqs))
 
 
     def __str__(self) -> str:
         return 'Year {} {}, Term: {}, Number of lectures: {}'.format(self.year, self.course_name, self.term, self.number_lecs)
 
+    def course_to_list(self):
+        return [self.id, self.course_name, self.year, self.term, self.number_lecs, self.timeandday, self.prereqs, self.postreqs, self.coreqs]
+
+
 
     def addprereq(self, newprereq):
         self.prereq.append(newprereq)
-        self.connections  = self.prereqs+ self.postreqs + self.coreqs
+        self.direct_connections  = self.prereqs.union(self.postreqs .union(self.coreqs))
 
     def addpostreq(self, newpostreq):
         self.postreqs.append(newpostreq)
-        self.connections  = self.prereqs+ self.postreqs + self.coreqs
+        self.direct_connections  = self.prereqs.union(self.postreqs .union(self.coreqs))
 
     def addcoreq(self,newcoreq):
         self.coreq.append(newcoreq)
-        self.connections  = self.prereqs+ self.postreqs + self.coreqs
+        self.direct_connections  = self.prereqs.union(self.postreqs .union(self.coreqs))
 
     def remove_prereq(self, id):
         self.prereqs.remove(id)
@@ -114,5 +140,15 @@ class Course:
         self.number_lecs = newlecs
 
 
-
-    
+def df_to_graph(df,graph_name):
+    cols_check = ['id', 'Name', 'Year', 'Term', 'Num lecs', 'Time', 'Prereqs', 'Postreqs', 'Coreqs' ]
+    if list(df.columns) != cols_check:
+        print('Improper columns') 
+        return
+    graph = Graph(graph_name)
+    graph_keys = df['id']
+    graph_vals = df[cols_check[1:]]
+    for k in range(len(df)):
+        row = graph_vals.iloc[k]
+        graph[graph_keys.iloc[k]]  = Course(tuple(row))
+    return graph
