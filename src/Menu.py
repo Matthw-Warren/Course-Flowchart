@@ -15,6 +15,7 @@ st.title('Course Flowchart')
 
 def new_graph():
     graph = fl.Graph()
+    st.session_state['graph'] = graph
 
 st.button('New Flowsheet',key = 'newButton', on_click=new_graph)
 
@@ -22,21 +23,12 @@ st.button('New Flowsheet',key = 'newButton', on_click=new_graph)
 uploaded_file = st.file_uploader("Load a csv file")
 
 if uploaded_file is not None:
-    # To read file as bytes:
-    bytes_data = uploaded_file.getvalue()
-    st.write(bytes_data)
-
-    # To convert to a string based IO:
-    stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-    st.write(stringio)
-
-    # To read file as string:
-    string_data = stringio.read()
-    st.write(string_data)
-
-    # Can be used wherever a "file-like" object is accepted:
     dataframe = pd.read_csv(uploaded_file)
-    st.write(dataframe)
-    graph = fl.Graph(dataframe)
+    # st.write(dataframe)
+    graph = fl.df_to_graph(dataframe)
+    st.write('Dataframe successfully imported')
+    st.session_state['graph'] = graph
+    # st.session_state['df'] = dataframe
+
 
 

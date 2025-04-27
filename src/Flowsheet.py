@@ -1,18 +1,12 @@
 import networkx as nx
 import pandas as pd
 
-
 part_to_int = {
     "Part IA" : 1,
     "Part IB" : 2,
     "Part II" : 3,
     "Part III" : 4
 }
-
-
-
-
-
 
 
 class Graph(dict):
@@ -49,6 +43,14 @@ class Graph(dict):
         df= self.graph_to_df()
         df.to_csv('src/saves'+name +'.csv')
 
+    def link_pre_post(self,pre_id,post_id):
+        self[pre_id].addpostreq(post_id)
+        self[post_id].addprereq(pre_id)
+
+    def link_co(self, id1, id2):
+        self[id1].addcoreq(id2)
+        self[id2].addcoreq(id1)
+
 
 class Course:
     def __init__(self, id, course_name: str, year ,term: str , number_lecs: int, timeandday ,  prereqs:set = set(), postreqs:set = set(), coreqs:set=set(), selected = False):
@@ -58,6 +60,7 @@ class Course:
         #Note to self, This is a graph - so the prereqs are going to be only the immediate ones - we dont need to go crazy and add all of the prereqs in
         self.id = id
         self.course_name = course_name
+        #The reqs are just going to be pointers to the Id of the course we're talking about.
         self.prereqs = prereqs
         self.postreqs = postreqs
         self.coreqs = coreqs 
@@ -78,25 +81,25 @@ class Course:
 
 
     def addprereq(self, newprereq):
-        self.prereq.append(newprereq)
+        self.prereqs.add(newprereq)
         self.direct_connections  = self.prereqs.union(self.postreqs .union(self.coreqs))
 
     def addpostreq(self, newpostreq):
-        self.postreqs.append(newpostreq)
+        self.postreqs.add(newpostreq)
         self.direct_connections  = self.prereqs.union(self.postreqs .union(self.coreqs))
 
     def addcoreq(self,newcoreq):
-        self.coreq.append(newcoreq)
+        self.coreqs.add(newcoreq)
         self.direct_connections  = self.prereqs.union(self.postreqs .union(self.coreqs))
 
-    def remove_prereq(self, id):
-        self.prereqs.remove(id)
+    def remove_prereq(self, course_id):
+        self.prereqs.remove(course_id)
         
-    def remove_postreq(self, id):
-        self.postreqs.remove(id)
+    def remove_postreq(self, course_id):
+        self.postreqs.remove(course_id)
 
-    def remove_coreq(self, id):
-        self.coreqs.remove(id)
+    def remove_coreq(self, course_id):
+        self.coreqs.remove(course_id)
 
 
     def get_deep_prereqs(self, Graph):
@@ -140,16 +143,29 @@ class Course:
         self.number_lecs = newlecs
 
 
+def str_to_set(string):
+    '''Have a string: set(blah1, blah2), or {blah}, return the set'''
+    n = len(string)
+    if string == 'set()' or string == '{}':
+        return set()
+    elif string[0]=='{':
+        elems = [int(x) for x in string[1:n-1].split(',')]
+    else:
+        elems = [int(x) for x in string[4:n-1].split(',')]
+    return set(elems)
+
+
+
 def df_to_graph(df):
     cols_check = ['id', 'Name', 'Year', 'Term', 'Num lecs', 'Time', 'Prereqs', 'Postreqs', 'Coreqs' ]
-    if list(df.columns) != cols_check:
-        print('Improper columns') 
-        return
+    # if list(df.columns) != cols_check:
+    #     print('Improper columns') 
+    #     return
     graph = Graph()
     graph_keys = df['id']
     graph_vals = df[cols_check[1:]]
     for k in range(len(df)):
-        row = graph_vals.iloc[k]
-        graph[graph_keys.iloc[k]]  = Course(tuple(row))
+        row = list(graph_vals.iloc[k])
+        graph[graph_keys.iloc[k]]  = Course( graph_keys[k], *row[:-3], str_to_set(row[-3]),  str_to_set(row[-2]),str_to_set(row[-1]))
     return graph
 
