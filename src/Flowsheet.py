@@ -54,7 +54,7 @@ class Course:
     def __init__(self, id, course_name: str, year ,term: str , number_lecs: int, timeandday ,  prereqs:set = set(), postreqs:set = set(), coreqs:set=set(), selected = False):
         #The prereqs and post reqs will be an array containing other courses, the general is for general info
         #  such as which term, how many courses, the lecturer. References could contain like books and lecture notes and stuff
-
+        #Time is a string: as follows: 'MWF-12' means moday - wednesday friday at twelve etc
         #Note to self, This is a graph - so the prereqs are going to be only the immediate ones - we dont need to go crazy and add all of the prereqs in
         self.id = id
         self.course_name = course_name
@@ -152,3 +152,7 @@ def df_to_graph(df):
         row = graph_vals.iloc[k]
         graph[graph_keys.iloc[k]]  = Course(tuple(row))
     return graph
+
+def load_chart():
+    
+    pass
