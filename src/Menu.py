@@ -13,7 +13,11 @@ from io import StringIO
 st.title('Course Flowchart')
 
 
-st.button('New Flowsheet',key = 'newButton', on_click=None)
+def new_graph():
+    graph = fl.Graph()
+
+st.button('New Flowsheet',key = 'newButton', on_click=new_graph)
+
 
 uploaded_file = st.file_uploader("Load a csv file")
 
@@ -33,5 +37,6 @@ if uploaded_file is not None:
     # Can be used wherever a "file-like" object is accepted:
     dataframe = pd.read_csv(uploaded_file)
     st.write(dataframe)
+    graph = fl.Graph(dataframe)
 
 

@@ -153,6 +153,3 @@ def df_to_graph(df):
         graph[graph_keys.iloc[k]]  = Course(tuple(row))
     return graph
 
-def load_chart():
-    
-    pass

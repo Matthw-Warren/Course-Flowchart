@@ -13,4 +13,5 @@ df=  graph.graph_to_df()
 
 
 cols_to_show = ['id', 'Name', 'Year', 'Term', 'Num lecs', 'Time']
-st.write(df[cols_to_show])
+st.title('Flowsheet - List View')
+st.dataframe(df[cols_to_show], hide_index=[0])
