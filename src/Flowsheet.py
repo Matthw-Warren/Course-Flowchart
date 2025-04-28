@@ -32,7 +32,7 @@ class Graph(dict):
 
 
     def graph_to_df(self):
-        cols = ['id', 'Name', 'Year', 'Term', 'Num lecs', 'Time', 'Prereqs', 'Postreqs', 'Coreqs' ]
+        cols = ['id', 'Name', 'Year', 'Term', 'Num lecs', 'Time', 'Prereqs', 'Postreqs', 'Selected' ]
         df = pd.DataFrame(columns=cols)
         for i, course in enumerate(self.values()):
             df.loc[i] = course.course_to_list()
@@ -76,7 +76,7 @@ class Course:
         return 'Year {} {}, Term: {}, Number of lectures: {}'.format(self.year, self.course_name, self.term, self.number_lecs)
 
     def course_to_list(self):
-        return [self.id, self.course_name, self.year, self.term, self.number_lecs, self.timeandday, self.prereqs, self.postreqs, self.coreqs]
+        return [self.id, self.course_name, self.year, self.term, self.number_lecs, self.timeandday, self.prereqs, self.postreqs, self.selected]
 
 
 
